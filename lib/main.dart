@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive/hive.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 import 'model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  Hive.registerAdapter(UserAdapter());
+  // await Hive.initFlutter();
+  // Hive.registerAdapter(UserAdapter());
   
   // await Future.delayed(Duration(seconds: 5));
   // .then<dynamic>((dynamic value) => value.registerAdapter(UserAdapter()));
@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
           body: SafeArea(
         child: Center(
             child: ElevatedButton(
-          onPressed: model.doSome,
+          onPressed: model.userAdapterFunc,
           child: Text('Жми'),
         )),
       )),

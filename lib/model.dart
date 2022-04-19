@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+part 'model.g.dart';
 
 class Model {
   void test() async {
@@ -17,8 +18,8 @@ class Model {
     // if (box.isOpen) box.close();
   }
 
-  void doSome() async {
-    // if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(UserAdapter());
+  void userAdapterFunc() async {
+    if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(UserAdapter());
     var box = await Hive.openBox<User>('user');
     final user = User('Ivan', 54);
     await box.add(user);
@@ -26,9 +27,12 @@ class Model {
     print(userFromBox);
   }
 }
-
+// for generate
+@HiveType(typeId: 0)
 class User {
+  @HiveField(0)
   String name;
+  @HiveField(1)
   int age;
   User(this.name, this.age);
 
@@ -36,20 +40,29 @@ class User {
   String toString() => '$name $age';
 }
 
-class UserAdapter extends TypeAdapter<User> {
-  @override
-  final typeId = 0;
+// class User {
+//   String name;
+//   int age;
+//   User(this.name, this.age);
 
-  @override
-  User read(BinaryReader reader) {
-    final name = reader.readString();
-    final age = reader.readInt();
-    return User(name, age);
-  }
+//   @override
+//   String toString() => '$name $age';
+// }
 
-  @override
-  void write(BinaryWriter writer, User obj) {
-    writer.writeString(obj.name);
-    writer.writeInt(obj.age);
-  }
-}
+// class UserAdapter extends TypeAdapter<User> {
+//   @override
+//   final typeId = 0;
+
+//   @override
+//   User read(BinaryReader reader) {
+//     final name = reader.readString();
+//     final age = reader.readInt();
+//     return User(name, age);
+//   }
+
+//   @override
+//   void write(BinaryWriter writer, User obj) {
+//     writer.writeString(obj.name);
+//     writer.writeInt(obj.age);
+//   }
+// }
