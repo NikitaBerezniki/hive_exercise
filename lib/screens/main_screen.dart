@@ -46,7 +46,9 @@ class _MainScreenState extends State<MainScreen> {
                         endActionPane:
                             ActionPane(motion: const ScrollMotion(), children: [
                           SlidableAction(
-                            onPressed: (context) {},
+                            onPressed: (context) {
+                              model.deleteUser(user.key);
+                            },
                             backgroundColor: const Color(0xFFFE4A49),
                             foregroundColor: Colors.white,
                             icon: Icons.delete,
@@ -64,7 +66,15 @@ class _MainScreenState extends State<MainScreen> {
                           title: Text(
                               'Имя: ${user.name} Фамилия: ${user.surname}\n День рождения: ${User.toDate(user.birthday)}'),
                           subtitle: Column(children: [
-                            Text(user.friends.toString()),
+                            Row(
+                              children: [
+                                Text('Друзья: '),
+                                Text(user.friends
+                                        ?.map((e) => e.name)
+                                        .toString() ??
+                                    ''),
+                              ],
+                            )
                           ]),
                         ),
                       ),

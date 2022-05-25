@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../constants.dart';
 
-
 void addPersonModalSheet(BuildContext context) {
   final nameController = TextEditingController();
   final surnameController = TextEditingController();
@@ -19,6 +18,7 @@ void addPersonModalSheet(BuildContext context) {
   }
 
   showModalBottomSheet(
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
         topLeft: Radius.circular(kRadius),
@@ -30,8 +30,10 @@ void addPersonModalSheet(BuildContext context) {
           padding: EdgeInsets.only(
               left: kPadding,
               right: kPadding,
-              bottom: MediaQuery.of(context).viewInsets.bottom / 5),
+              bottom: MediaQuery.of(context).viewInsets.bottom + 50),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Align(
                 alignment: Alignment.topCenter,
@@ -53,6 +55,7 @@ void addPersonModalSheet(BuildContext context) {
                       ?.copyWith(fontWeight: FontWeight.bold)),
               SizedBox(height: kPadding),
               TextField(
+                autofocus: true,
                 controller: nameController,
                 decoration: const InputDecoration(
                   hintText: 'Имя',

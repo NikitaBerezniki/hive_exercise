@@ -28,4 +28,11 @@ class UserData extends ChangeNotifier {
     _users = userBox.values.toList();
     notifyListeners();
   }
+
+  void addFriends(User user, User friends) {
+    user.friends = HiveList(user.box as Box<User>);
+    user.friends?.add(friends);
+    user.save();
+    notifyListeners();
+  }
 }

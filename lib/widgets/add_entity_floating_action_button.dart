@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:hive_exercise/widgets/modal_sheet/add_friends_modal_sheet.dart';
 import 'modal_sheet/add_person_modal_sheet.dart';
 
 class AddEntityFloatingActionButton extends StatelessWidget {
@@ -30,7 +31,7 @@ class AddEntityFloatingActionButton extends StatelessWidget {
           backgroundColor: Colors.deepOrange,
           foregroundColor: Colors.white,
           label: 'Добавить друга',
-          onTap: () => addPersonModalSheet(context),
+          onTap: () => addFriendsModalSheet(context),
         ),
         SpeedDialChild(
           child: const Icon(Icons.person_add),
