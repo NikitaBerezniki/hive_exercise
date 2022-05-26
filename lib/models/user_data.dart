@@ -36,10 +36,13 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFriends(User user, User friends) {
+  void addFriends(User user, User friend) {
     user.friends = HiveList(user.box as Box<User>);
-    user.friends?.add(friends);
+    user.friends?.add(friend);
     user.save();
+    friend.friends = HiveList(friend.box as Box<User>);
+    friend.friends?.add(user);
+    friend.save();
     notifyListeners();
   }
 }
