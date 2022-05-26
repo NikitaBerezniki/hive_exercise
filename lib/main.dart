@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive_exercise/models/todo_data.dart';
 import 'package:hive_exercise/models/user_data.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'models/entities/user.dart';
+import 'models/exchange_data.dart';
 import 'screens/main_screen.dart';
 
 void main() async {
@@ -23,9 +26,22 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(
+          ChangeNotifierProvider<UserData>(
             create: (BuildContext context) => UserData(),
+          ),
+          ProxyProvider<UserData, TodoData>(
+            update: (context, userModel, todoModel) {
+              return TodoData(userModel);
+            },
           )
+          // ProxyProvider2<UserData, TodoData, ExchangeData>(
+          //   update: (BuildContext context, UserData userData, TodoData todoData,
+          //           ExchangeData exchangeModel) =>
+          //       ExchangeData(),
+          // ),
+          // ChangeNotifierProvider<TodoData>(
+          //   create: (BuildContext context) => TodoData(),
+          // ),
         ],
         builder: (context, snapshot) {
           return MaterialApp(

@@ -7,6 +7,13 @@ class UserData extends ChangeNotifier {
   List<User> _users = [];
   List<User> get users => _users;
 
+  User? _activeUser;
+  User? get activeUser => _activeUser;
+
+  void setActiveUser(User selectedUser) {
+    _activeUser = selectedUser;
+  }
+
   Future<void> getUsers() async {
     final Box<User> userBox = await BoxManager.instance.openUserBox();
     _users = userBox.values.toList();

@@ -63,6 +63,9 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                         ]),
                         child: ListTile(
+                          onTap: (){
+                            
+                          },
                           title: Text(
                               'Имя: ${user.name} Фамилия: ${user.surname}\n День рождения: ${User.toDate(user.birthday)}'),
                           subtitle: Column(children: [
