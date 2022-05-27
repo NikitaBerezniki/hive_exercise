@@ -12,6 +12,7 @@ class UserData extends ChangeNotifier {
 
   void setActiveUser(User selectedUser) {
     _activeUser = selectedUser;
+    notifyListeners();
   }
 
   Future<void> getUsers() async {
