@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hive_exercise/models/todo_data.dart';
 import 'package:hive_exercise/models/user_data.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
 
-void addPersonModalSheet(BuildContext context) {
+void addSimpleTaskModalSheet(BuildContext context) {
   final nameController = TextEditingController();
-  final surnameController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   void onAddUser() {
     final name = nameController.text.trim();
-    final surname = surnameController.text.trim();
-    if (name.isNotEmpty && surname.isNotEmpty) {
-      Provider.of<UserData>(context, listen: false).addUser(name, surname);
+    final description = descriptionController.text.trim();
+    if (name.isNotEmpty && description.isNotEmpty) {
+      Provider.of<TodoData>(context, listen: false).addSimpleTodo(name, description);
       Navigator.of(context).pop();
     }
   }
@@ -48,7 +49,7 @@ void addPersonModalSheet(BuildContext context) {
                   ),
                 ),
               ),
-              Text('Добавить нового пользователя',
+              Text('Добавить новую задачу',
                   style: Theme.of(context)
                       .textTheme
                       .headline6
@@ -58,7 +59,7 @@ void addPersonModalSheet(BuildContext context) {
                 autofocus: true,
                 controller: nameController,
                 decoration: const InputDecoration(
-                  hintText: 'Имя',
+                  hintText: 'Название',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(kRadius),
@@ -68,9 +69,9 @@ void addPersonModalSheet(BuildContext context) {
               ),
               SizedBox(height: kPadding),
               TextField(
-                controller: surnameController,
+                controller: descriptionController,
                 decoration: const InputDecoration(
-                  hintText: 'Фамилия',
+                  hintText: 'Описание',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(kRadius),

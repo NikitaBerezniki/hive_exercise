@@ -20,6 +20,11 @@ class User extends HiveObject {
     return DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
   }
 
+  @override
+  String toString() {
+    return '$name $surname $key';
+  }
+
   User({
     required this.name,
     required this.surname,

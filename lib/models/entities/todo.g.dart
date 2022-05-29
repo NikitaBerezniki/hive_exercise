@@ -17,24 +17,45 @@ class TodoAdapter extends TypeAdapter<Todo> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Todo(
-      name: fields[0] as String,
-      description: fields[1] as String,
-      isDone: fields[3] as bool,
-    )..date = fields[2] as DateTime;
+      name: fields[0] as String?,
+      description: fields[1] as String?,
+      isDone: fields[2] as bool?,
+      listOfIssues: (fields[3] as Map?)?.cast<String, bool>(),
+      startTime: fields[5] as int?,
+      finishTime: fields[6] as int?,
+      deadlineForCompletion: fields[7] as int?,
+      subtasks: (fields[8] as HiveList?)?.castHiveList(),
+      responsibleUsers: (fields[9] as HiveList?)?.castHiveList(),
+      priority: fields[10] as int?,
+    )..dateCreate = fields[4] as int;
   }
 
   @override
   void write(BinaryWriter writer, Todo obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.description)
       ..writeByte(2)
-      ..write(obj.date)
+      ..write(obj.isDone)
       ..writeByte(3)
-      ..write(obj.isDone);
+      ..write(obj.listOfIssues)
+      ..writeByte(4)
+      ..write(obj.dateCreate)
+      ..writeByte(5)
+      ..write(obj.startTime)
+      ..writeByte(6)
+      ..write(obj.finishTime)
+      ..writeByte(7)
+      ..write(obj.deadlineForCompletion)
+      ..writeByte(8)
+      ..write(obj.subtasks)
+      ..writeByte(9)
+      ..write(obj.responsibleUsers)
+      ..writeByte(10)
+      ..write(obj.priority);
   }
 
   @override

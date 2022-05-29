@@ -10,10 +10,15 @@ class UserData extends ChangeNotifier {
   User? _activeUser;
   User? get activeUser => _activeUser;
 
+  // List<User>? _acquaintancesOfActiveUser;
+  // List<User>? get acquaintancesOfActiveUser => _acquaintancesOfActiveUser;
+
   void setActiveUser(User selectedUser) {
     _activeUser = selectedUser;
     notifyListeners();
   }
+
+
 
   Future<void> getUsers() async {
     final Box<User> userBox = await BoxManager.instance.openUserBox();
@@ -37,13 +42,47 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFriends(User user, User friend) {
-    user.friends = HiveList(user.box as Box<User>);
-    user.friends?.add(friend);
-    user.save();
-    friend.friends = HiveList(friend.box as Box<User>);
-    friend.friends?.add(user);
-    friend.save();
+  List<User>? searchForAcquaintances() {
+    // Поиск потенциальных друзей
+    if (activeUser != null) {
+      // await BoxManager.instance.openUserBox();
+      return _users
+          .where((findFriend) =>
+              findFriend != activeUser &&
+              !(activeUser?.friends?.contains(findFriend) ?? false))
+          .toList();
+    }
+    return null;
+  }
+
+  Future<void> addFriend(User user, User friend) async {
+    await BoxManager.instance.openUserBox();
+    void _add(User _user, User _friend) {
+      if (_user.friends?.isEmpty ?? true) {
+        _user.friends = HiveList(_user.box as Box<User>);
+      }
+      _user.friends?.add(_friend);
+      _user.save();
+    }
+
+    _add(user, friend);
+    _add(friend, user);
+    notifyListeners();
+  }
+
+  Future<void> deleteFromFriends(int index) async {
+    await BoxManager.instance.openUserBox();
+    User? formerFriend; // Бывший друг
+    activeUser?.friends?.removeWhere((element) {
+      if (element.key == index) {
+        formerFriend = element;
+        return true;
+      }
+      return false;
+    });
+    activeUser?.save();
+    formerFriend?.friends?.remove(activeUser);
+    formerFriend?.save();
     notifyListeners();
   }
 }
