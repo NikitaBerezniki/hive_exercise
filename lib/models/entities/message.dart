@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:hive/hive.dart';
+
 import 'package:hive_exercise/models/entities/user.dart';
+
 part 'message.g.dart';
 
 @HiveType(typeId: 2)
@@ -20,7 +22,7 @@ class Message extends HiveObject {
 
   @override
   String toString() {
-    return 'text $text. fromUser: $fromUser toUser: $toUser. createDate ${createDate}';
+    return '<text $text.> <<fromUser: $fromUser>> <<toUser: $toUser>> <<<createDate $createDate>>>';
   }
 
   Message({
@@ -30,4 +32,23 @@ class Message extends HiveObject {
     this.replyOfMessage,
     // this.group,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+  
+    return other is Message &&
+      other.text == text &&
+      other.fromUser == fromUser &&
+      other.toUser == toUser &&
+      other.createDate == createDate;
+  }
+
+  @override
+  int get hashCode {
+    return text.hashCode ^
+      fromUser.hashCode ^
+      toUser.hashCode ^
+      createDate.hashCode;
+  }
 }

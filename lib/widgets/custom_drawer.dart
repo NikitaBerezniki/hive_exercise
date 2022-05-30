@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_exercise/box_manager.dart';
 import 'package:hive_exercise/models/user_data.dart';
 import 'package:hive_exercise/services/global_extensions.dart';
 import 'package:hive_exercise/widgets/alert_dialog/delete_database_alert_dialog.dart';

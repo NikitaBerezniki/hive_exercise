@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_exercise/models/todo_data.dart';
-import 'package:hive_exercise/models/user_data.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';

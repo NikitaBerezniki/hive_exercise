@@ -92,7 +92,7 @@ class FriendCard extends StatelessWidget {
                   Text('12:05')
                 ],
               ),
-              subtitle: Column(children: [
+              subtitle: Column(children: const [
                 SizedBox(height: 8),
                 Text('Displaying images is fundamental for most mobile apps.')
               ]),

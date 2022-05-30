@@ -15,21 +15,21 @@ class TodoManagerScreen extends StatefulWidget {
 
 class _TodoManagerScreenState extends State<TodoManagerScreen> {
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     Provider.of<TodoData>(context, listen: false).getTodoofActiveUser();
-    print(Provider.of<TodoData>(context, listen: false).todos);
+    super.didChangeDependencies();
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Consumer<TodoData>(builder: (context, model, _) {
-      print("length todosOfActiveUser ${model.todosOfActiveUser?.length}");
+      // print("length todosOfActiveUser ${model.todosOfActiveUser?.length}");
       return ListView.builder(
         itemCount: model.todosOfActiveUser?.length ?? 0,
         itemBuilder: (context, index) {
           Todo? todo = model.todosOfActiveUser?.elementAt(index);
-          print('build TodoManagerScreen time: ${DateTime.now()}');
+          // print('build TodoManagerScreen time: ${DateTime.now()}');
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: kPadding / 2),
             child: ClipRRect(

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive_exercise/constants.dart';
 import 'package:hive_exercise/models/bottom_bar_data.dart';
 import 'package:hive_exercise/models/user_data.dart';
-import 'package:hive_exercise/services/global_extensions.dart';
 import 'package:provider/provider.dart';
-import '../models/entities/user.dart';
 import '../widgets/floating_button/add_entity_floating_action_button.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_bottom_navigation_bar.dart';
@@ -33,7 +29,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserData>(builder: (context, model, _) {
+    return Consumer<UserData>(builder: (_, model, __) {
+      // if (model.users.isNotEmpty) model.setActiveUser(model.users.first);
       return SafeArea(
           child: Scaffold(
         bottomNavigationBar: CustomBottomNavigationBar(),
@@ -41,11 +38,9 @@ class _MainScreenState extends State<MainScreen> {
         appBar: customAppBar(''),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: const AddEntityFloatingActionButton(),
-        body: Consumer<BottomBarData>(
-          builder: (context, model, child) {
-            return model.activeScreen;
-          }
-        ),
+        body: Consumer<BottomBarData>(builder: (context, model, child) {
+          return model.activeScreen;
+        }),
       ));
     });
   }

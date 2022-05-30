@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 import 'user.dart';
@@ -35,7 +36,7 @@ class Todo extends HiveObject {
   // List<int>? notifications; // Список будильников для уведомлений
   // @HiveField(13)
   // int? color;
-  // TODO: =>>> Groups, Files
+  // =>>> Groups, Files
   @override
   String toString() {
     return '$name $description';
@@ -53,4 +54,39 @@ class Todo extends HiveObject {
     this.responsibleUsers,
     this.priority,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+  
+    return other is Todo &&
+      other.name == name &&
+      other.description == description &&
+      other.isDone == isDone &&
+      mapEquals(other.listOfIssues, listOfIssues) &&
+      other.dateCreate == dateCreate &&
+      other.startTime == startTime &&
+      other.finishTime == finishTime &&
+      other.deadlineForCompletion == deadlineForCompletion &&
+      other.subtasks == subtasks &&
+      other.responsibleUsers == responsibleUsers &&
+      other.priority == priority;
+  }
+
+  @override
+  int get hashCode {
+    return name.hashCode ^
+      description.hashCode ^
+      isDone.hashCode ^
+      listOfIssues.hashCode ^
+      dateCreate.hashCode ^
+      startTime.hashCode ^
+      finishTime.hashCode ^
+      deadlineForCompletion.hashCode ^
+      subtasks.hashCode ^
+      responsibleUsers.hashCode ^
+      priority.hashCode;
+  }
+
+  
 }

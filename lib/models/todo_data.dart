@@ -30,7 +30,7 @@ class TodoData extends ChangeNotifier {
     activeUser?.todos?.add(todo);
     activeUser?.save();
     // print('todoBox.values ${todoBox.values}');
-    print('activeUser?.todos ${activeUser?.todos}');
+    // print('activeUser?.todos ${activeUser?.todos}');
     notifyListeners();
   }
 
@@ -38,7 +38,7 @@ class TodoData extends ChangeNotifier {
     await BoxManager.instance.openUserBox();
     await BoxManager.instance.openTodoBox();
     final activeUser = userData.activeUser;
-    print(activeUser?.todos?.isNotEmpty);
+    // print(activeUser?.todos?.isNotEmpty);
     if (activeUser?.todos?.isNotEmpty ?? false) {
       _todosOfActiveUser = activeUser?.todos?.toList() as List<Todo>;
     }

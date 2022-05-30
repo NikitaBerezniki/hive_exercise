@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:hive/hive.dart';
+
 import 'package:hive_exercise/models/entities/todo.dart';
+
 part 'user.g.dart';
 
 @HiveType(typeId: 0)
@@ -22,7 +24,7 @@ class User extends HiveObject {
 
   @override
   String toString() {
-    return '$name $surname $key';
+    return '$name $surname';
   }
 
   User({
@@ -46,5 +48,24 @@ class User extends HiveObject {
         birthday: birthdayDateTime.millisecondsSinceEpoch,
         friends: friends,
         todos: todos);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is User &&
+        other.name == name &&
+        other.surname == surname &&
+        other.birthday == birthday;
+    // && other.friends == friends &&
+    // other.todos == todos;
+  }
+
+  @override
+  int get hashCode {
+    return name.hashCode ^ surname.hashCode ^ birthday.hashCode;
+    // ^friends.hashCode ^
+    // todos.hashCode;
   }
 }
