@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_exercise/models/user_data.dart';
+import 'package:hive_exercise/services/global_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -9,8 +10,8 @@ void addPersonModalSheet(BuildContext context) {
   final surnameController = TextEditingController();
 
   void onAddUser() {
-    final name = nameController.text.trim();
-    final surname = surnameController.text.trim();
+    final name = nameController.text.trim().capitalize();
+    final surname = surnameController.text.trim().capitalize();
     if (name.isNotEmpty && surname.isNotEmpty) {
       Provider.of<UserData>(context, listen: false).addUser(name, surname);
       Navigator.of(context).pop();

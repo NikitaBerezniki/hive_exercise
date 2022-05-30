@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_exercise/constants.dart';
 import 'package:hive_exercise/models/message_data.dart';
-import 'package:hive_exercise/services/global_extensions.dart';
 import 'package:hive_exercise/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -23,34 +22,50 @@ class _ChatScreenState extends State<ChatScreen> {
       Provider.of<MessageData>(context, listen: false)
           .showDialog(widget.toUser);
     });
-    // scrollDown();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // scrollController.addListener(() {
+      //   print('scrolling');
+      // });
+      // scrollController.position.isScrollingNotifier.addListener(() {
+      //   if (!scrollController.position.isScrollingNotifier.value) {
+      //     print('scroll is stopped');
+      //   } else {
+      //     print('scroll is started');
+      //   }
+      // });
+    });
   }
 
   void scrollDown() {
-    scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.position.hasViewportDimension) {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      }
+    });
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Provider.of<MessageData>(context, listen: false).showDialog(widget.toUser);
-  // }
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+  }
 
   final scrollController = ScrollController();
   final messageController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    print('build ChatScreen ${DateTime.now()}');
     return Consumer<MessageData>(builder: (context, model, child) {
+      if (model.dialog?.length == null) return Container();
       return Scaffold(
-        appBar: customAppBar(
-            '${widget.toUser.name.capitalize()} ${widget.toUser.surname.capitalize()}'),
+        appBar: customAppBar('${widget.toUser.name} ${widget.toUser.surname}'),
         body: Column(children: [
           Expanded(
             child: ListView.builder(
-              // reverse: true,
-              // physics: ClampingScrollPhysics(),
-              cacheExtent: ,
               controller: scrollController,
               itemCount: model.dialog?.length ?? 0,
               shrinkWrap: true,
@@ -60,6 +75,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 final message = model.dialog?.elementAt(index);
                 final dateMessage = DateTime.fromMillisecondsSinceEpoch(
                     message?.createDate ?? 0);
+                if (model.dialog?.length == index + 1) scrollDown();
                 return Container(
                   padding:
                       EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
