@@ -57,6 +57,7 @@ class UserData extends ChangeNotifier {
 
   Future<void> addFriend(User user, User friend) async {
     await BoxManager.instance.openUserBox();
+    await BoxManager.instance.openTodoBox();
     void _add(User _user, User _friend) {
       if (_user.friends?.isEmpty ?? true) {
         _user.friends = HiveList(_user.box as Box<User>);
@@ -72,6 +73,7 @@ class UserData extends ChangeNotifier {
 
   Future<void> deleteFromFriends(int index) async {
     await BoxManager.instance.openUserBox();
+    await BoxManager.instance.openTodoBox();
     User? formerFriend; // Бывший друг
     activeUser?.friends?.removeWhere((element) {
       if (element.key == index) {

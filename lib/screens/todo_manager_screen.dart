@@ -23,13 +23,13 @@ class _TodoManagerScreenState extends State<TodoManagerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TodoData>(builder: (context, model, _) {
-      // print("length todosOfActiveUser ${model.todosOfActiveUser?.length}");
-      return ListView.builder(
+    return FutureProvider<TodoData>(create: (context) => TodoData(), initialData: getTodoofActiveUser(),
+    // return Consumer<TodoData>(builder: (context, model, _) {
+    //   return 
+      child: ListView.builder(
         itemCount: model.todosOfActiveUser?.length ?? 0,
         itemBuilder: (context, index) {
           Todo? todo = model.todosOfActiveUser?.elementAt(index);
-          // print('build TodoManagerScreen time: ${DateTime.now()}');
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: kPadding / 2),
             child: ClipRRect(
