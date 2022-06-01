@@ -5,30 +5,25 @@ import 'package:hive_exercise/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../models/entities/message.dart';
 import '../models/entities/user.dart';
+import '../widgets/alert_dialog/message_detail_alert_dialog.dart';
 
-class CustomListViewScrollController extends ScrollController {}
-
-class ChatScreen extends StatefulWidget {
-  final User toUser;
-  const ChatScreen({required this.toUser, Key? key}) : super(key: key);
-
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  @override
-  void dispose() {
-    super.dispose();
+extension SelectionsOfMessages on _ChatScreenState {
+  void onLongPressOnMessage(message) {
+    if (!isSelectedMessages) {
+      setState(() => onSelectMessages(message));
+    }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<MessageData>(context, listen: false)
-          .showDialog(widget.toUser);
-    });
+  void onTapOnMessage(message) {
+    if (isSelectedMessages) {
+      setState(() {
+        onSelectMessages(message);
+      });
+    } else {
+      if (message != null) {
+        messageDetailAlertDialog(context, message);
+      }
+    }
   }
 
   void onSelectMessages(message) {
@@ -42,18 +37,44 @@ class _ChatScreenState extends State<ChatScreen> {
       selectedMessages.add(message!);
     }
   }
+}
 
-  final _focusNode = FocusNode();
-  final _messageController = TextEditingController();
+class ChatScreen extends StatefulWidget {
+  final User toUser;
+  const ChatScreen({required this.toUser, Key? key}) : super(key: key);
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  late FocusNode _focusNode;
+  late TextEditingController _messageController;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _messageController = TextEditingController();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   List<Message> selectedMessages = [];
   bool isSelectedMessages = false;
-  bool isOpenAddition = false;
+  bool isOpenAddAtachments = false;
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<MessageData>(builder: (context, model, child) {
-      if (model.dialog?.length == null) {
-        return Scaffold(appBar: AppBar(), body: Container());
-      }
+    return Consumer<MessageData>(builder: (_, messageModel, __) {
       return Scaffold(
         appBar: customAppBar('${widget.toUser.name} ${widget.toUser.surname}'),
         body: Column(children: [
@@ -65,73 +86,79 @@ class _ChatScreenState extends State<ChatScreen> {
                 onTap: () {
                   _focusNode.nextFocus();
                 },
-                child: ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: model.dialog?.length ?? 0,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    final isToUser =
-                        model.dialog?.elementAt(index).toUser == widget.toUser;
-                    final message = model.dialog?.elementAt(index);
-                    final dateMessage = DateTime.fromMillisecondsSinceEpoch(
-                        message?.createDate ?? 0);
-                    return GestureDetector(
-                      onLongPress: () {
-                        setState(() {
-                          if (!isSelectedMessages) onSelectMessages(message);
-                        });
-                      },
-                      onTap: () {
-                        setState(() {
-                          if (isSelectedMessages) onSelectMessages(message);
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            left: 14, right: 14, top: 5, bottom: 5),
-                        child: Align(
-                          alignment: (!isToUser
-                              ? Alignment.topLeft
-                              : Alignment.topRight),
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: (!isToUser
-                                      ? (selectedMessages.contains(message)
-                                          ? Colors.grey.shade400
-                                          : Colors.grey.shade200)
-                                      : (selectedMessages.contains(message)
-                                          ? Colors.blue[400]
-                                          : Colors.blue[200])),
-                                ),
-                                padding: EdgeInsets.only(
-                                    top: kPadding,
-                                    bottom: kPadding,
-                                    left: kPadding,
-                                    right: kPadding * 3),
-                                child: Text(
-                                  model.dialog?.elementAt(index).text ?? '',
-                                  style: TextStyle(fontSize: 18),
+                child: FutureBuilder<List<Message>>(
+                    future: messageModel.showActiveDialog(widget.toUser),
+                    builder: (context, snapshot) {
+                      return ListView.builder(
+                        controller: _scrollController,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data?.length ?? 1,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          final isToUser =
+                              snapshot.data?.elementAt(index).toUser ==
+                                  widget.toUser;
+                          final message = snapshot.data?.elementAt(index);
+                          final timeMessage = MessageData.dateMessage(message);
+                          print(snapshot.hasData);
+                          if (snapshot.hasData == false) {
+                            return Center(
+                              child: Text('Напишите первым!!!'),
+                            );
+                          }
+                          return GestureDetector(
+                            onLongPress: () => onLongPressOnMessage(message),
+                            onTap: () => onTapOnMessage(message),
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  left: 14, right: 14, top: 5, bottom: 5),
+                              child: Align(
+                                alignment: (!isToUser
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: (!isToUser
+                                            ? (selectedMessages
+                                                    .contains(message)
+                                                ? Colors.grey.shade400
+                                                : Colors.grey.shade200)
+                                            : (selectedMessages
+                                                    .contains(message)
+                                                ? Colors.blue[400]
+                                                : Colors.blue[200])),
+                                      ),
+                                      padding: EdgeInsets.only(
+                                          top: kPadding,
+                                          bottom: kPadding,
+                                          left: kPadding,
+                                          right: kPadding * 3),
+                                      child: Text(
+                                        message?.text ?? '',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                    Positioned(
+                                        bottom: 5,
+                                        right: 10,
+                                        child: Text(
+                                          timeMessage,
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black
+                                                  .withOpacity(0.4)),
+                                        )),
+                                  ],
                                 ),
                               ),
-                              Positioned(
-                                  bottom: 5,
-                                  right: 10,
-                                  child: Text(
-                                    '${dateMessage.hour}:${dateMessage.minute}',
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.black.withOpacity(0.4)),
-                                  )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
               ),
             ),
           ),
@@ -153,9 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 prefixIcon: IconButton(
                   icon: Icon(Icons.attach_file_rounded),
                   onPressed: () {
-                    setState(() {
-                      isOpenAddition = !isOpenAddition;
-                    });
+                    setState(() => isOpenAddAtachments = !isOpenAddAtachments);
                   },
                 ),
                 hintText: 'Сообщение',
@@ -163,13 +188,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     icon: Icon(Icons.send_rounded),
                     onPressed: () {
                       if (_messageController.text.trim().isEmpty) return;
-                      model.sendMessage(_messageController.text, widget.toUser);
+                      messageModel.sendMessage(
+                          _messageController.text, widget.toUser);
                       _messageController.clear();
                     }),
               ),
             ),
           ),
-          if (isOpenAddition)
+          if (isOpenAddAtachments)
             ListView(
               shrinkWrap: true,
               children: [

@@ -14,72 +14,74 @@ class TodoManagerScreen extends StatefulWidget {
 }
 
 class _TodoManagerScreenState extends State<TodoManagerScreen> {
-  @override
-  void didChangeDependencies() {
-    Provider.of<TodoData>(context, listen: false).getTodoofActiveUser();
-    super.didChangeDependencies();
-  }
-
+  // @override
+  // void initState() {
+  //   // Provider.of<TodoData>(context, listen: false).getTodoofActiveUser();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return FutureProvider<TodoData>(create: (context) => TodoData(), initialData: getTodoofActiveUser(),
-    // return Consumer<TodoData>(builder: (context, model, _) {
-    //   return 
-      child: ListView.builder(
-        itemCount: model.todosOfActiveUser?.length ?? 0,
-        itemBuilder: (context, index) {
-          Todo? todo = model.todosOfActiveUser?.elementAt(index);
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kPadding / 2),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(kRadius),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(kRadius)),
-                child: Slidable(
-                  closeOnScroll: true,
-                  endActionPane:
-                      ActionPane(motion: const ScrollMotion(), children: [
-                    SlidableAction(
-                      onPressed: (context) {},
-                      backgroundColor: const Color(0xFFFE4A49),
-                      foregroundColor: Colors.white,
-                      icon: Icons.delete,
-                      label: 'Удалить',
-                    ),
-                  ]),
-                  child: ListTile(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(kRadius)),
-                    title: Text(todo?.name ?? ''),
-                    subtitle: Text(todo?.description ?? ''),
-                    leading: StatefulBuilder(builder: (context, setState) {
-                      return Transform.scale(
-                        scale: 1.8,
-                        child: Checkbox(
-                          activeColor: Theme.of(context).primaryColor,
-                          checkColor: Colors.white,
-                          shape: CircleBorder(),
-                          onChanged: (value) {
-                            setState(
-                              () {
-                                todo?.isDone = value;
-                                todo?.save();
-                              },
+    return Consumer<TodoData>(builder: (_, model, __) {
+      return FutureBuilder<List<Todo>>(
+          future: model.getTodoOfActiveUser(),
+          builder: (context, snapshot) {
+            return ListView.builder(
+              itemCount: snapshot.data?.length ?? 0,
+              itemBuilder: (context, index) {
+                Todo todo = snapshot.data!.elementAt(index);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: kPadding / 2),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(kRadius),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(kRadius)),
+                      child: Slidable(
+                        closeOnScroll: true,
+                        endActionPane:
+                            ActionPane(motion: const ScrollMotion(), children: [
+                          SlidableAction(
+                            onPressed: (context) {},
+                            backgroundColor: const Color(0xFFFE4A49),
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Удалить',
+                          ),
+                        ]),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(kRadius)),
+                          title: Text(todo.name ?? ''),
+                          subtitle: Text(todo.description ?? ''),
+                          leading:
+                              StatefulBuilder(builder: (context, setState) {
+                            return Transform.scale(
+                              scale: 1.8,
+                              child: Checkbox(
+                                activeColor: Theme.of(context).primaryColor,
+                                checkColor: Colors.white,
+                                shape: CircleBorder(),
+                                onChanged: (value) {
+                                  setState(
+                                    () {
+                                      todo.isDone = value;
+                                      todo.save();
+                                    },
+                                  );
+                                },
+                                value: todo.isDone,
+                              ),
                             );
-                          },
-                          value: todo?.isDone,
+                          }),
                         ),
-                      );
-                    }),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          );
-        },
-      );
+                );
+              },
+            );
+          });
     });
   }
 }

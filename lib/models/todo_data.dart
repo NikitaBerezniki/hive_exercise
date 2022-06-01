@@ -15,7 +15,7 @@ class TodoData extends ChangeNotifier {
   List<Todo> get todos => _todos;
 
   List<Todo>? _todosOfActiveUser = [];
-  List<Todo>? get todosOfActiveUser => _todosOfActiveUser;
+  // List<Todo>? get todosOfActiveUser => _todosOfActiveUser;
 
   Future<void> addSimpleTodo(String name, String description) async {
     final todoBox = await BoxManager.instance.openTodoBox();
@@ -34,18 +34,15 @@ class TodoData extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTodoofActiveUser() async {
+  Future<List<Todo>> getTodoOfActiveUser() async {
     await BoxManager.instance.openUserBox();
     await BoxManager.instance.openTodoBox();
     final activeUser = userData.activeUser;
     // print(activeUser?.todos?.isNotEmpty);
-    if (activeUser?.todos?.isNotEmpty ?? false) {
-      _todosOfActiveUser = activeUser?.todos?.toList() as List<Todo>;
+    if (activeUser != null && (activeUser.todos?.isNotEmpty ?? false)) {
+      _todosOfActiveUser = activeUser.todos?.toList() as List<Todo>;
+      return _todosOfActiveUser ?? [];
     }
-  }
-
-  Future<List<Todo>?> getTodoofActiveUserForFutureBuilder() async {
-    getTodoofActiveUser();
-    return _todosOfActiveUser;
+    return [];
   }
 }

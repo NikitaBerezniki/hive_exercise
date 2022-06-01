@@ -1,49 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hive_exercise/models/message_data.dart';
 import 'package:hive_exercise/screens/chat_screen.dart';
 import 'package:hive_exercise/services/global_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
+import '../models/entities/message.dart';
 import '../models/entities/user.dart';
 import '../models/user_data.dart';
 
-class MessangerScreen extends StatelessWidget {
+class MessangerScreen extends StatefulWidget {
   const MessangerScreen({Key? key}) : super(key: key);
   static const String appBartitle = 'Мессенджер';
 
   @override
+  State<MessangerScreen> createState() => _MessangerScreenState();
+}
+
+class _MessangerScreenState extends State<MessangerScreen> {
+  @override
   Widget build(BuildContext context) {
-    return Consumer<UserData>(builder: (context, model, _) {
-      return Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: model.activeUser?.friends?.length ?? 0,
-              itemBuilder: (context, index) {
-                final User? friend =
-                    model.activeUser?.friends?.elementAt(index);
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: FriendCard(friend),
-                );
-              },
-            ),
+    return Consumer<UserData>(builder: (_, userModel, __) {
+      return Column(children: [
+        Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: userModel.activeUser?.friends?.length ?? 0,
+            itemBuilder: (context, index) {
+              final User? friend =
+                  userModel.activeUser?.friends?.elementAt(index);
+              if (friend == null) return Container();
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: FriendCard(friend),
+              );
+            },
           ),
-        ],
-      );
+        )
+      ]);
     });
   }
 }
 
 class FriendCard extends StatelessWidget {
-  final User? friend;
-  const FriendCard(this.friend, {Key? key}) : super(key: key);
+  final User toUser;
+  const FriendCard(this.toUser, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserData>(builder: (context, model, _) {
+    return Consumer2<UserData, MessageData>(
+        builder: (_, userModel, messageModel, __) {
       return Card(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(kRadius / 4),
@@ -52,7 +59,7 @@ class FriendCard extends StatelessWidget {
             endActionPane: ActionPane(motion: const ScrollMotion(), children: [
               SlidableAction(
                 onPressed: (context) {
-                  model.deleteFromFriends(friend?.key);
+                  userModel.deleteFromFriends(toUser.key);
                 },
                 backgroundColor: const Color(0xFFFE4A49),
                 foregroundColor: Colors.white,
@@ -62,15 +69,13 @@ class FriendCard extends StatelessWidget {
             ]),
             child: ListTile(
               onTap: () {
-                if (friend == null) return;
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ChatScreen(toUser: friend!),
+                  builder: (context) => ChatScreen(toUser: toUser),
                 ));
               },
               contentPadding:
                   EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 8),
               horizontalTitleGap: 8,
-              // isThreeLine: true,
               visualDensity: VisualDensity.comfortable,
               leading: CircleAvatar(
                   radius: 28,
@@ -84,18 +89,16 @@ class FriendCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${friend?.name.capitalize()} ${friend?.surname.capitalize()}',
+                    '${toUser.name.capitalize()} ${toUser.surname.capitalize()}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text('12:05')
+                  // Text(/*dialogs?[toUser]?.last.createDate.toString()??*/ ''),
+                  Text(''),
                 ],
               ),
-              subtitle: Column(children: const [
-                SizedBox(height: 8),
-                Text('Displaying images is fundamental for most mobile apps.')
-              ]),
+              subtitle: Text(/*dialogs?[toUser]?.last.text ??*/ ''),
             ),
           ),
         ),

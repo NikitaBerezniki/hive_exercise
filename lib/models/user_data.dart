@@ -5,26 +5,29 @@ import 'package:hive_exercise/models/entities/user.dart';
 
 class UserData extends ChangeNotifier {
   List<User> _users = [];
-  List<User> get users => _users;
+  List<User> get users => _users; // Закрыть!
 
   User? _activeUser;
   User? get activeUser => _activeUser;
-
-  // List<User>? _acquaintancesOfActiveUser;
-  // List<User>? get acquaintancesOfActiveUser => _acquaintancesOfActiveUser;
 
   void setActiveUser(User selectedUser) {
     _activeUser = selectedUser;
     notifyListeners();
   }
 
-
-
-  Future<void> getUsers() async {
+  Future<List<User>> getUsers() async {
     final Box<User> userBox = await BoxManager.instance.openUserBox();
     _users = userBox.values.toList();
-    notifyListeners();
+    notifyListeners(); // Закрыть!
+    return _users;
   }
+
+  //   Future<List<User>> getFriendsOfActiveUser() async {
+  //   final Box<User> userBox = await BoxManager.instance.openUserBox();
+  //   _users = userBox.values.toList();
+  //   notifyListeners(); // Закрыть!
+  //   return _users;
+  // }
 
   Future<void> addUser(String name, String surname) async {
     final Box<User> userBox = await BoxManager.instance.openUserBox();
@@ -45,7 +48,6 @@ class UserData extends ChangeNotifier {
   List<User>? searchForAcquaintances() {
     // Поиск потенциальных друзей
     if (activeUser != null) {
-      // await BoxManager.instance.openUserBox();
       return _users
           .where((findFriend) =>
               findFriend != activeUser &&
