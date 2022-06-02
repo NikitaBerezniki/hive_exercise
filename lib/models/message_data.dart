@@ -33,25 +33,20 @@ class MessageData extends ChangeNotifier {
     return message;
   }
 
-  // Future<void> showDialogsForMessengerList() async {
-  //   final boxMessage = await BoxManager.instance.openMessageBox();
-  //   await BoxManager.instance.openUserBox(); // ???
-  //   // final friends = userData.activeUser?.friends;
-  //   final friends = userData.activeUser?.friends;
-  //   List<Message> temp = [];
-  //   for (var message in boxMessage.values) {
-  //     if (friends != null &&
-  //         message.fromUser == userData.activeUser &&
-  //         friends.contains(message.toUser)) {
-  //       // print('${message.toUser} ------- $message');
-  //       // _dialogs?[message.toUser]?.add(message);
-  //       temp.add(message);
-  //       // print(temp);
-  //       _dialogs?[message.toUser] = temp;
-  //     }
-  //   }
-  //   // print(_dialogs);
-  // }
+  Future<Map<User, Message>> getLastMessagesOfFriends() async {
+    final boxMessage = await BoxManager.instance.openMessageBox();
+    await BoxManager.instance.openUserBox(); // ???
+    final friends = userData.activeUser?.friends;
+    Map<User, Message> temp = {};
+    for (var lastMessage in boxMessage.values) {
+      if (friends != null &&
+          lastMessage.fromUser == userData.activeUser &&
+          friends.contains(lastMessage.toUser)) {
+        temp[lastMessage.toUser] = lastMessage;
+      }
+    }
+    return temp;
+  }
 
   Future<List<Message>> showActiveDialog(User toUser) async {
     final boxMessage = await BoxManager.instance.openMessageBox();
@@ -63,7 +58,6 @@ class MessageData extends ChangeNotifier {
         .toList();
     return _activeDialog;
   }
-
 
   Future<bool> deleteMessage(Message message) async {
     await BoxManager.instance.openMessageBox();

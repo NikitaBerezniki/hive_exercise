@@ -100,7 +100,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                   widget.toUser;
                           final message = snapshot.data?.elementAt(index);
                           final timeMessage = MessageData.dateMessage(message);
-                          print(snapshot.hasData);
                           if (snapshot.hasData == false) {
                             return Center(
                               child: Text('Напишите первым!!!'),

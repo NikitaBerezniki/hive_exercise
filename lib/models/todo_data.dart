@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_final_fields
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_exercise/box_manager.dart';
 import 'package:hive_exercise/models/user_data.dart';
 import 'entities/todo.dart';
+import 'entities/user.dart';
 import 'user_data.dart';
 
 class TodoData extends ChangeNotifier {
@@ -17,7 +17,8 @@ class TodoData extends ChangeNotifier {
   List<Todo>? _todosOfActiveUser = [];
   // List<Todo>? get todosOfActiveUser => _todosOfActiveUser;
 
-  Future<void> addSimpleTodo(String name, String description) async {
+  Future<void> addSimpleTodo(String name, String description,
+      User? responsibleUser, DateTimeRange datepicker) async {
     final todoBox = await BoxManager.instance.openTodoBox();
     await BoxManager.instance.openUserBox();
     final todo = Todo(name: name, description: description, isDone: false);
