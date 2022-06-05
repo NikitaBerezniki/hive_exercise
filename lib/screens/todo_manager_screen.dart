@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_exercise/constants.dart';
 import 'package:hive_exercise/models/todo_data.dart';
+import 'package:hive_exercise/services/global_extensions.dart';
 import 'package:provider/provider.dart';
 import '../models/entities/todo.dart';
 
@@ -14,11 +15,6 @@ class TodoManagerScreen extends StatefulWidget {
 }
 
 class _TodoManagerScreenState extends State<TodoManagerScreen> {
-  // @override
-  // void initState() {
-  //   // Provider.of<TodoData>(context, listen: false).getTodoofActiveUser();
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +27,8 @@ class _TodoManagerScreenState extends State<TodoManagerScreen> {
               itemBuilder: (context, index) {
                 Todo todo = snapshot.data!.elementAt(index);
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: kPadding / 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: kPadding / 2),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(kRadius),
                     child: Card(
@@ -39,21 +36,26 @@ class _TodoManagerScreenState extends State<TodoManagerScreen> {
                           borderRadius: BorderRadius.circular(kRadius)),
                       child: Slidable(
                         closeOnScroll: true,
-                        endActionPane:
-                            ActionPane(motion: const ScrollMotion(), children: [
-                          SlidableAction(
-                            onPressed: (context) {},
-                            backgroundColor: const Color(0xFFFE4A49),
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete,
-                            label: 'Удалить',
-                          ),
-                        ]),
+                        endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) {},
+                                backgroundColor: const Color(0xFFFE4A49),
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Удалить',
+                              ),
+                            ]),
                         child: ListTile(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(kRadius)),
                           title: Text(todo.name ?? ''),
                           subtitle: Text(todo.description ?? ''),
+                          trailing: Text(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                      todo.dateCreate)
+                                  .toddmmyyyy()),
                           leading:
                               StatefulBuilder(builder: (context, setState) {
                             return Transform.scale(
@@ -63,12 +65,15 @@ class _TodoManagerScreenState extends State<TodoManagerScreen> {
                                 checkColor: Colors.white,
                                 shape: CircleBorder(),
                                 onChanged: (value) {
-                                  setState(
-                                    () {
-                                      todo.isDone = value;
-                                      todo.save();
-                                    },
-                                  );
+                                  if (value != null) {
+                                    model.changeDone(todo, value);
+                                  }
+                                  // setState(
+                                  //   () {
+                                  //     todo.isDone = value;
+                                  //     todo.save();
+                                  //   },
+                                  // );
                                 },
                                 value: todo.isDone,
                               ),

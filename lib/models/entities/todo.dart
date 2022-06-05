@@ -55,38 +55,42 @@ class Todo extends HiveObject {
     this.priority,
   });
 
+  static String dateMessage(Todo? todo) {
+    if (todo == null) return '';
+    final date = DateTime.fromMillisecondsSinceEpoch(todo.dateCreate);
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is Todo &&
-      other.name == name &&
-      other.description == description &&
-      other.isDone == isDone &&
-      mapEquals(other.listOfIssues, listOfIssues) &&
-      other.dateCreate == dateCreate &&
-      other.startTime == startTime &&
-      other.finishTime == finishTime &&
-      other.deadlineForCompletion == deadlineForCompletion &&
-      other.subtasks == subtasks &&
-      other.responsibleUsers == responsibleUsers &&
-      other.priority == priority;
+        other.name == name &&
+        other.description == description &&
+        other.isDone == isDone &&
+        mapEquals(other.listOfIssues, listOfIssues) &&
+        other.dateCreate == dateCreate &&
+        other.startTime == startTime &&
+        other.finishTime == finishTime &&
+        other.deadlineForCompletion == deadlineForCompletion &&
+        other.subtasks == subtasks &&
+        other.responsibleUsers == responsibleUsers &&
+        other.priority == priority;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
-      description.hashCode ^
-      isDone.hashCode ^
-      listOfIssues.hashCode ^
-      dateCreate.hashCode ^
-      startTime.hashCode ^
-      finishTime.hashCode ^
-      deadlineForCompletion.hashCode ^
-      subtasks.hashCode ^
-      responsibleUsers.hashCode ^
-      priority.hashCode;
+        description.hashCode ^
+        isDone.hashCode ^
+        listOfIssues.hashCode ^
+        dateCreate.hashCode ^
+        startTime.hashCode ^
+        finishTime.hashCode ^
+        deadlineForCompletion.hashCode ^
+        subtasks.hashCode ^
+        responsibleUsers.hashCode ^
+        priority.hashCode;
   }
-
-  
 }

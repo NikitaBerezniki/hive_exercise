@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_exercise/box_manager.dart';
+import 'package:hive_exercise/services/box_manager.dart';
 import 'package:hive_exercise/models/entities/message.dart';
 import 'package:hive_exercise/models/user_data.dart';
 import 'entities/user.dart';
@@ -14,12 +14,6 @@ class MessageData extends ChangeNotifier {
   // Map<User, List<Message>>? _dialogs;
   // Map<User, List<Message>>? get dialogs => _dialogs;
 
-  static String dateMessage(Message? message) {
-    if (message == null) return '';
-    final date = DateTime.fromMillisecondsSinceEpoch(message.createDate);
-    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-  }
-
   Future<Message> sendMessage(String text, User toUser) async {
     await BoxManager.instance.openUserBox();
     final boxMessage = await BoxManager.instance.openMessageBox();
@@ -33,19 +27,37 @@ class MessageData extends ChangeNotifier {
     return message;
   }
 
-  Future<Map<User, Message>> getLastMessagesOfFriends() async {
+  Future<List<MapEntry<User, Message?>>> getLastMessagesOfFriends() async {
     final boxMessage = await BoxManager.instance.openMessageBox();
-    await BoxManager.instance.openUserBox(); // ???
+    await BoxManager.instance.openUserBox();
     final friends = userData.activeUser?.friends;
-    Map<User, Message> temp = {};
+    Map<User, Message?> lastMessages = {};
     for (var lastMessage in boxMessage.values) {
-      if (friends != null &&
-          lastMessage.fromUser == userData.activeUser &&
-          friends.contains(lastMessage.toUser)) {
-        temp[lastMessage.toUser] = lastMessage;
+      // print(
+      //     '|${lastMessage.toUser} ${userData.activeUser}| ${friends != null} ${friends?.contains(lastMessage.toUser)} ${lastMessage.text}');
+      if ((friends != null &&
+              (friends.contains(lastMessage.toUser)) &&
+              (lastMessage.toUser == userData.activeUser) ||
+          lastMessage.fromUser == userData.activeUser)) {
+        lastMessages[lastMessage.toUser] = lastMessage;
+        // print(lastMessages);
       }
     }
-    return temp;
+    if (friends != null) {
+      for (var friend in friends.toList()) {
+        if (lastMessages.containsKey(friend) == false) {
+          lastMessages[friend] = null;
+        }
+      }
+    }
+    List<MapEntry<User, Message?>> sortedLastMessages =
+        lastMessages.entries.toList();
+    sortedLastMessages.sort((a, b) {
+      if (a.value == null) return -1;
+      if (b.value == null) return -1;
+      return b.value!.createDate.compareTo(a.value!.createDate);
+    });
+    return sortedLastMessages;
   }
 
   Future<List<Message>> showActiveDialog(User toUser) async {

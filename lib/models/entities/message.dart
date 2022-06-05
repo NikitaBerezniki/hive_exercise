@@ -22,7 +22,13 @@ class Message extends HiveObject {
 
   @override
   String toString() {
-    return '<text $text.> <<fromUser: $fromUser>> <<toUser: $toUser>> <<<createDate $createDate>>>';
+    return '<<< text: $text. fromUser: $fromUser. toUser: $toUser. createDate $createDate >>>\n';
+  }
+
+    static String dateMessage(Message? message) {
+    if (message == null) return '';
+    final date = DateTime.fromMillisecondsSinceEpoch(message.createDate);
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
   Message({

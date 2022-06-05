@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_exercise/box_manager.dart';
+import 'package:hive_exercise/services/box_manager.dart';
 import 'package:hive_exercise/models/entities/user.dart';
 
 class UserData extends ChangeNotifier {

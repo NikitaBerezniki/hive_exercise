@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:hive_exercise/models/entities/message.dart';
-import 'models/entities/user.dart';
-import 'models/entities/todo.dart';
+import '../models/entities/user.dart';
+import '../models/entities/todo.dart';
 
 class BoxManager {
   static final BoxManager instance = BoxManager._();

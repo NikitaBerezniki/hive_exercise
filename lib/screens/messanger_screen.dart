@@ -20,9 +20,10 @@ class MessangerScreen extends StatefulWidget {
 class _MessangerScreenState extends State<MessangerScreen> {
   @override
   Widget build(BuildContext context) {
-    return Consumer2<UserData, MessageData>(
-        builder: (_, userModel, messageModel, __) {
-      return FutureBuilder<Map<User, Message>>(
+    return Consumer<MessageData>(builder: (_, messageModel, __) {
+      return FutureBuilder<List<MapEntry<User, Message?>>>(
+          // future: Provider.of<MessageData>(context, listen: false)
+          //     .getLastMessagesOfFriends(),
           future: messageModel.getLastMessagesOfFriends(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return Container();
@@ -31,12 +32,11 @@ class _MessangerScreenState extends State<MessangerScreen> {
               Expanded(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: userModel.activeUser?.friends?.length ?? 0,
+                  itemCount: lastMessages?.length ?? 0,
                   itemBuilder: (context, index) {
-                    final User? friend =
-                        userModel.activeUser?.friends?.elementAt(index);
+                    final lastMessage = lastMessages?.elementAt(index).value;
+                    final friend = lastMessages?.elementAt(index).key;
                     if (friend == null) return Container();
-                    final lastMessage = lastMessages?[friend];
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: FriendCard(friend, lastMessage),
@@ -57,60 +57,56 @@ class FriendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserData>(
-        builder: (_, userModel, __) {
-        return Card(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(kRadius / 4),
-            child: Slidable(
-              closeOnScroll: true,
-              endActionPane:
-                  ActionPane(motion: const ScrollMotion(), children: [
-                SlidableAction(
-                  onPressed: (context) {
-                    userModel.deleteFromFriends(toUser.key);
-                  },
-                  backgroundColor: const Color(0xFFFE4A49),
-                  foregroundColor: Colors.white,
-                  icon: Icons.delete,
-                  label: 'Удалить из друзей',
-                ),
-              ]),
-              child: ListTile(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ChatScreen(toUser: toUser),
-                  ));
+      return Card(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(kRadius / 4),
+          child: Slidable(
+            closeOnScroll: true,
+            endActionPane: ActionPane(motion: const ScrollMotion(), children: [
+              SlidableAction(
+                onPressed: (context) {
+                  Provider.of<UserData>(context, listen: false).deleteFromFriends(toUser.key);
                 },
-                contentPadding:
-                    EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 8),
-                horizontalTitleGap: 8,
-                visualDensity: VisualDensity.comfortable,
-                leading: CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      size: 40,
-                    )),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${toUser.name.capitalize()} ${toUser.surname.capitalize()}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(MessageData.dateMessage(message)),
-                  ],
-                ),
-                subtitle: Text(message?.text ?? ''),
+                backgroundColor: const Color(0xFFFE4A49),
+                foregroundColor: Colors.white,
+                icon: Icons.delete,
+                label: 'Удалить из друзей',
               ),
+            ]),
+            child: ListTile(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ChatScreen(toUser: toUser),
+                ));
+              },
+              contentPadding:
+                  EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 8),
+              horizontalTitleGap: 8,
+              visualDensity: VisualDensity.comfortable,
+              leading: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                  child: Icon(
+                    Icons.person,
+                    size: 40,
+                  )),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${toUser.name.capitalize()} ${toUser.surname.capitalize()}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(Message.dateMessage(message)),
+                ],
+              ),
+              subtitle: Text(message?.text ?? ''),
             ),
           ),
-        );
-      });
+        ),
+      );
   }
 }

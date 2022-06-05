@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_final_fields
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_exercise/box_manager.dart';
+import 'package:hive_exercise/services/box_manager.dart';
 import 'package:hive_exercise/models/user_data.dart';
 import 'entities/todo.dart';
 import 'entities/user.dart';
@@ -16,6 +16,13 @@ class TodoData extends ChangeNotifier {
 
   List<Todo>? _todosOfActiveUser = [];
   // List<Todo>? get todosOfActiveUser => _todosOfActiveUser;
+
+  Future<void> changeDone(Todo todo, bool value) async {
+    await BoxManager.instance.openTodoBox();
+    todo.isDone = value;
+    todo.save();
+    notifyListeners();
+  }
 
   Future<void> addSimpleTodo(String name, String description,
       User? responsibleUser, DateTimeRange datepicker) async {
@@ -39,10 +46,14 @@ class TodoData extends ChangeNotifier {
     await BoxManager.instance.openUserBox();
     await BoxManager.instance.openTodoBox();
     final activeUser = userData.activeUser;
-    // print(activeUser?.todos?.isNotEmpty);
+
     if (activeUser != null && (activeUser.todos?.isNotEmpty ?? false)) {
-      _todosOfActiveUser = activeUser.todos?.toList() as List<Todo>;
-      return _todosOfActiveUser ?? [];
+      _todosOfActiveUser = activeUser.todos!.toList();
+      _todosOfActiveUser!.sort((previus, current) {
+        return current.dateCreate > previus.dateCreate ? -1 : 1;
+      });
+      _todosOfActiveUser!.sort((a, b) => (b.isDone ?? false) ? -1 : 1);
+      return _todosOfActiveUser!;
     }
     return [];
   }

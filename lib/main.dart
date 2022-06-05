@@ -36,7 +36,6 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProxyProvider<UserData, MessageData>(
               create: (context) => MessageData(UserData()),
               update: (context, userModel, messageModel) => MessageData(userModel)),
-          
         ],
         builder: (context, _) {
           return MaterialApp(
